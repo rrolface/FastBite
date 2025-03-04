@@ -8,6 +8,8 @@ public class PlayerManager : MonoBehaviour
     public float velocidad = 5f;      // Velocidad hacia adelante
     public float lateralSpeed = 10f;  // Velocidad de movimiento lateral
 
+    public int chocolatina = 1;
+
     // Límites de los carriles
     public float leftLimit = 7.89f;    // Límite izquierdo
     public float rightLimit = 21.89f;  // Límite derecho
@@ -21,13 +23,14 @@ public class PlayerManager : MonoBehaviour
     void Update()
     {
         // Movimiento hacia adelante (siempre activo)
-        transform.Translate(Vector3.forward * velocidad * Time.deltaTime);
+        transform.Translate(Vector3.forward * velocidad * chocolatina * Time.deltaTime);
 
         // Selección de carril
         SelectTargetPosition();
 
         // Movimiento lateral suave hacia el carril objetivo
         MoveToTargetPosition();
+
     }
 
     private void SelectTargetPosition()
@@ -57,5 +60,13 @@ public class PlayerManager : MonoBehaviour
         );
 
         transform.position = newPosition;
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("cubo")){
+            chocolatina++;
+        }
     }
 }
