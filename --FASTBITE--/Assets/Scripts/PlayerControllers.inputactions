@@ -1,0 +1,56 @@
+{
+    "name": "PlayerControllers",
+    "maps": [
+        {
+            "name": "InGame",
+            "id": "44cbce8e-eb3a-4b62-81d4-4adb0b8f3ec2",
+            "actions": [
+                {
+                    "name": "HorizontalMovement",
+                    "type": "Button",
+                    "id": "49c7a7e3-9a68-4d3a-98db-91a2b77120c2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "KeyBoard",
+                    "id": "10bd786f-caa8-4dff-a5d7-834222978701",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HorizontalMovement",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "ffaf3165-a5ab-40ee-8c4c-b9aedff73631",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HorizontalMovement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "bb270d70-a315-437c-888e-b37eba77c097",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HorizontalMovement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
