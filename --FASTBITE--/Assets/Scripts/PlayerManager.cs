@@ -39,12 +39,12 @@ public class PlayerManager : MonoBehaviour
         float x = transform.position.x;
 
         // Movimiento a la derecha (solo si no supera el límite derecho)
-        if (horizontalMovement == 1 && x < rightLimit)
+        if (horizontalMovement == -1 && x < rightLimit)
         {
             targetPosition.x = Mathf.Min(x + lanesDistance, rightLimit); // Asegura que no se pase del límite derecho
         }
         // Movimiento a la izquierda (solo si no supera el límite izquierdo)
-        else if (horizontalMovement == -1 && x > leftLimit)
+        else if (horizontalMovement == 1 && x > leftLimit)
         {
             targetPosition.x = Mathf.Max(x - lanesDistance, leftLimit); // Asegura que no se pase del límite izquierdo
         }

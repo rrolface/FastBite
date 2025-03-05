@@ -44,7 +44,7 @@ public class obstaculosLogic : MonoBehaviour
             Debug.Log("Punto de spawn seleccionado: " + spawnPoint.position);
 
             // Instanciar el obstáculo en el punto de spawn
-            GameObject newObstacle = Instantiate(obstacle, spawnPoint.position, Quaternion.identity);
+            GameObject newObstacle = Instantiate(obstacle, spawnPoint.position, Quaternion.Euler(0,180,0));
             Debug.Log("Obstáculo generado: " + newObstacle.name + " en " + spawnPoint.position);
 
             // Mover el obstáculo hacia el jugador
