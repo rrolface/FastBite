@@ -1,5 +1,8 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -13,25 +16,53 @@ public class PlayerManager : MonoBehaviour
     private float velChocolatina = 0.6f;
 
     private int barrasRecogidas = 0;  // Contador de barras recogidas
-    public float energia = 5f;  // Energía del jugador
+    public float energia = 0f;  // Energía del jugador (comienza en 0)
+    private float maxEnergiaActual = 0f; // Energía máxima actual
     public TMP_Text chocolateText;
 
+    public Slider energiaSlider;
 
     // Límites de los carriles
     public float leftLimit = 7.89f;    // Límite izquierdo
     public float rightLimit = 21.89f;  // Límite derecho
+
+    // Audio
+    public AudioSource audiosourceDisminuirVelocidad;
+    public AudioSource audiosourceChocolatina;
+
+    // Animator
+    private Animator animator;
 
     void Start()
     {
         inputManager = GetComponent<InputManager>();
         targetPosition = transform.position; // Inicializa la posición objetivo
 
-        if(chocolateText != null)
+        // Obtén el componente Animator
+        animator = GetComponent<Animator>();
+
+        if (chocolateText != null)
         {
             chocolateText.text = "Barras Recogidas 0";
         }
 
-        
+        // Inicializa la barra de energía
+        if (energiaSlider != null)
+        {
+            energiaSlider.minValue = 0;
+            energiaSlider.maxValue = 1; // Valor inicial máximo (puede aumentar)
+            energiaSlider.value = energia; // Comienza en 0
+        }
+
+        // Asegúrate de que los AudioSources estén asignados
+        if (audiosourceChocolatina == null)
+        {
+            audiosourceChocolatina = GetComponent<AudioSource>();
+        }
+        if (audiosourceDisminuirVelocidad == null && GetComponents<AudioSource>().Length > 1)
+        {
+            audiosourceDisminuirVelocidad = GetComponents<AudioSource>()[1];
+        }
     }
 
     void Update()
@@ -45,14 +76,26 @@ public class PlayerManager : MonoBehaviour
         // Movimiento lateral suave hacia el carril objetivo
         MoveToTargetPosition();
 
+        // Actualiza el texto de las barras recogidas
         if (chocolateText != null)
         {
             chocolateText.text = "Barras Recogidas: " + barrasRecogidas.ToString();
         }
 
-        Debug.Log("energia: " + energia);
-        Debug.Log("Chocolatina: " + chocolatina);
+        // Actualiza la barra de energía
+        if (energiaSlider != null)
+        {
+            energiaSlider.value = energia;
+        }
 
+        // Verifica si la energía llegó a 0
+        if (energia <= 0)
+        {
+            GameOver();
+        }
+
+        Debug.Log("Energía: " + energia);
+        Debug.Log("Chocolatina: " + chocolatina);
     }
 
     private void SelectTargetPosition()
@@ -84,7 +127,6 @@ public class PlayerManager : MonoBehaviour
         transform.position = newPosition;
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("BarraChocolate"))
@@ -92,6 +134,21 @@ public class PlayerManager : MonoBehaviour
             barrasRecogidas++;
             energia += velChocolatina;
             velocidad += velChocolatina;
+
+            // Actualiza la energía máxima si es necesario
+            if (energia > maxEnergiaActual)
+            {
+                maxEnergiaActual = energia;
+                if (energiaSlider != null)
+                {
+                    energiaSlider.maxValue = maxEnergiaActual;
+                }
+            }
+
+            if (audiosourceChocolatina != null)
+            {
+                audiosourceChocolatina.PlayOneShot(audiosourceChocolatina.clip);
+            }
             Destroy(other.gameObject);
         }
 
@@ -99,21 +156,58 @@ public class PlayerManager : MonoBehaviour
         {
             energia -= velChocolatina;
             velocidad -= velChocolatina;
+
+            // Asegúrate de que la energía no sea menor que 0
+            if (energia < 0)
+            {
+                energia = 0;
+            }
+
+            // Reproduce la animación de tropezar
+            if (animator != null)
+            {
+                animator.SetTrigger("Trip");
+            }
+
             if (energia <= 0)
             {
+                Debug.Log("PERDISTE EL JUEGOOOOOOOOOO");
                 GameOver();
+            }
+
+            if (audiosourceDisminuirVelocidad != null)
+            {
+                audiosourceDisminuirVelocidad.PlayOneShot(audiosourceDisminuirVelocidad.clip);
             }
         }
     }
+
     void GameOver()
     {
+        Debug.Log("Game over llamado");
+
         float distanciaFinal = transform.position.z;
         float tiempoFinal = Time.timeSinceLevelLoad;
 
-        RankingManager.Instance.GuardarRanking(barrasRecogidas, distanciaFinal, tiempoFinal);
-        RankingManager.Instance.MostrarRanking();
+        Debug.Log("Barras recogidas: " + barrasRecogidas);
+        Debug.Log("Distancia final: " + distanciaFinal);
+        Debug.Log("Tiempo final: " + tiempoFinal);
 
-        Debug.Log("Juego Terminado. Barras Recogidas: " + barrasRecogidas);
+        if (RankingManager.Instance != null)
+        {
+            RankingManager.Instance.GuardarRanking(barrasRecogidas, distanciaFinal, tiempoFinal);
+            RankingManager.Instance.MostrarRanking();
+        }
+        else
+        {
+            Debug.Log("RankingManager.Instance es nulo");
+        }
 
+        ReiniciarJuego();
+    }
+
+    void ReiniciarJuego()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
