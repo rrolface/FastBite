@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -8,7 +9,13 @@ public class PlayerManager : MonoBehaviour
     public float velocidad = 5f;      // Velocidad hacia adelante
     public float lateralSpeed = 10f;  // Velocidad de movimiento lateral
 
-    public int chocolatina = 1;
+    public float chocolatina = 1f;
+    private float velChocolatina = 0.6f;
+
+    private int barrasRecogidas = 0;  // Contador de barras recogidas
+    public float energia = 5f;  // Energía del jugador
+    public TMP_Text chocolateText;
+
 
     // Límites de los carriles
     public float leftLimit = 7.89f;    // Límite izquierdo
@@ -18,18 +25,33 @@ public class PlayerManager : MonoBehaviour
     {
         inputManager = GetComponent<InputManager>();
         targetPosition = transform.position; // Inicializa la posición objetivo
+
+        if(chocolateText != null)
+        {
+            chocolateText.text = "Barras Recogidas 0";
+        }
+
+        
     }
 
     void Update()
     {
         // Movimiento hacia adelante (siempre activo)
-        transform.Translate(Vector3.forward * velocidad * chocolatina * Time.deltaTime);
+        transform.Translate(Vector3.forward * velocidad * Time.deltaTime);
 
         // Selección de carril
         SelectTargetPosition();
 
         // Movimiento lateral suave hacia el carril objetivo
         MoveToTargetPosition();
+
+        if (chocolateText != null)
+        {
+            chocolateText.text = "Barras Recogidas: " + barrasRecogidas.ToString();
+        }
+
+        Debug.Log("energia: " + energia);
+        Debug.Log("Chocolatina: " + chocolatina);
 
     }
 
@@ -65,8 +87,33 @@ public class PlayerManager : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("cubo")){
-            chocolatina++;
+        if (other.CompareTag("BarraChocolate"))
+        {
+            barrasRecogidas++;
+            energia += velChocolatina;
+            velocidad += velChocolatina;
+            Destroy(other.gameObject);
         }
+
+        if (other.CompareTag("Obstaculo"))
+        {
+            energia -= velChocolatina;
+            velocidad -= velChocolatina;
+            if (energia <= 0)
+            {
+                GameOver();
+            }
+        }
+    }
+    void GameOver()
+    {
+        float distanciaFinal = transform.position.z;
+        float tiempoFinal = Time.timeSinceLevelLoad;
+
+        RankingManager.Instance.GuardarRanking(barrasRecogidas, distanciaFinal, tiempoFinal);
+        RankingManager.Instance.MostrarRanking();
+
+        Debug.Log("Juego Terminado. Barras Recogidas: " + barrasRecogidas);
+
     }
 }
