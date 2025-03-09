@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour
     public float lanesDistance = 7f;  // Distancia entre carriles
     public float velocidad = 5f;      // Velocidad hacia adelante
     public float lateralSpeed = 10f;  // Velocidad de movimiento lateral
+    public GameObject PanelJuego;
 
     public float chocolatina = 1f;
     private float velChocolatina = 0.6f;
@@ -76,7 +77,7 @@ public class PlayerManager : MonoBehaviour
         MoveToTargetPosition();
 
         if (chocolateText != null)
-            chocolateText.text = $"Barras Recogidas: {barrasRecogidas}";
+            chocolateText.text = $"FastBites: {barrasRecogidas}";
 
         if (energiaSlider != null)
             energiaSlider.value = energia;
@@ -161,6 +162,8 @@ public class PlayerManager : MonoBehaviour
         if (other.CompareTag("meta"))
         {
             GameManager.Instance.EndGame();
+            PanelJuego.SetActive(false);
+            
         }
     }
 

@@ -39,9 +39,9 @@ public class GameManager : MonoBehaviour
         gameStarted = false;
 
         // Obtener referencias a los scripts en la escena
-        PlayerManager playerManager = FindObjectOfType<PlayerManager>();
-        calculadorDistancia distanceCalculator = FindObjectOfType<calculadorDistancia>();
-        TimerController timerController = FindObjectOfType<TimerController>();
+        PlayerManager playerManager = FindFirstObjectByType<PlayerManager>();
+        calculadorDistancia distanceCalculator = FindFirstObjectByType<calculadorDistancia>();
+        TimerController timerController = FindFirstObjectByType<TimerController>();
 
         if (playerManager != null)
             totalChocolates = playerManager.ObtenerPuntaje();

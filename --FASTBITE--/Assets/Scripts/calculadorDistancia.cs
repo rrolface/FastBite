@@ -22,7 +22,7 @@ public class calculadorDistancia : MonoBehaviour
 
         if (distanceText != null)
         {
-            distanceText.text = $"Distancia: {totalDistance:F1} m";
+            distanceText.text = $"{totalDistance:F1} m";
         }
     }
 
@@ -33,7 +33,7 @@ public class calculadorDistancia : MonoBehaviour
 
         if (distanceText != null)
         {
-            distanceText.text = "Distancia: 0 m";
+            distanceText.text = "Distance: 0 m";
         }
     }
 
