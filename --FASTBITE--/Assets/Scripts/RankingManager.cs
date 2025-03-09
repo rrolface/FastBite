@@ -1,74 +1,54 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-public class RankingManager
+public class RankingManager : MonoBehaviour
 {
-    public static RankingManager Instance; // Singleton para acceder desde otros scripts
+    public TMP_Text rankingText;
+    private List<int> scores = new List<int>();
+    private const int maxRankings = 5;
 
-    private List<RankingEntry> ranking = new List<RankingEntry>();
-
-    private void Awake()
+    void Start()
     {
-        if (Instance == null)
+        CargarPuntajes();
+        MostrarRanking();
+    }
+
+    public void GuardarPuntaje(int nuevoPuntaje)
+    {
+        scores.Add(nuevoPuntaje);
+        scores.Sort((a, b) => b.CompareTo(a)); // Ordena de mayor a menor
+
+        if (scores.Count > maxRankings)
+            scores.RemoveAt(scores.Count - 1); // Mantiene solo los 5 mejores
+
+        for (int i = 0; i < scores.Count; i++)
         {
-            Instance = this;
+            PlayerPrefs.SetInt($"Ranking_{i}", scores[i]);
         }
-        else
+
+        PlayerPrefs.Save();
+        MostrarRanking();
+    }
+
+    private void CargarPuntajes()
+    {
+        scores.Clear();
+        for (int i = 0; i < maxRankings; i++)
         {
-            
+            if (PlayerPrefs.HasKey($"Ranking_{i}"))
+                scores.Add(PlayerPrefs.GetInt($"Ranking_{i}"));
         }
     }
 
-    public void GuardarRanking(int barras, float distancia, float tiempo)
+    private void MostrarRanking()
     {
-        // Crear una nueva entrada de ranking
-        RankingEntry nuevaEntrada = new RankingEntry(barras, distancia, tiempo);
+        if (!rankingText) return;
 
-        // Agregar al ranking
-        ranking.Add(nuevaEntrada);
-
-        // Ordenar por mayor número de barras recogidas, luego por distancia y finalmente por tiempo
-        ranking.Sort((a, b) =>
+        rankingText.text = "?? **Ranking** ??\n";
+        for (int i = 0; i < scores.Count; i++)
         {
-            int compareBarras = b.barrasRecogidas.CompareTo(a.barrasRecogidas);
-            if (compareBarras != 0) return compareBarras;
-
-            int compareDistancia = b.distancia.CompareTo(a.distancia);
-            if (compareDistancia != 0) return compareDistancia;
-
-            return a.tiempo.CompareTo(b.tiempo); // Menor tiempo es mejor en caso de empate
-        });
-
-        // Opcionalmente, puedes limitar el ranking a los mejores N jugadores
-        if (ranking.Count > 5) // Guardar solo el top 5
-        {
-            ranking.RemoveAt(ranking.Count - 1);
+            rankingText.text += $"{i + 1}. {scores[i]} pts\n";
         }
-    }
-
-    public void MostrarRanking()
-    {
-        Debug.Log("=== RANKING ===");
-        for (int i = 0; i < ranking.Count; i++)
-        {
-            Debug.Log((i + 1) + ". Barras: " + ranking[i].barrasRecogidas +
-                      " | Distancia: " + ranking[i].distancia.ToString("F1") + "m" +
-                      " | Tiempo: " + ranking[i].tiempo.ToString("F1") + "s");
-        }
-    }
-}
-
-[System.Serializable]
-public class RankingEntry
-{
-    public int barrasRecogidas;
-    public float distancia;
-    public float tiempo;
-
-    public RankingEntry(int barras, float distancia, float tiempo)
-    {
-        this.barrasRecogidas = barras;
-        this.distancia = distancia;
-        this.tiempo = tiempo;
     }
 }

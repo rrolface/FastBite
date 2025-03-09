@@ -38,6 +38,7 @@ public class PlayerManager : MonoBehaviour
         inputManager = GetComponent<InputManager>();
         targetPosition = transform.position; // Inicializa la posición objetivo
 
+
         // Obtén el componente Animator
         animator = GetComponent<Animator>();
 
@@ -67,35 +68,24 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        // Movimiento hacia adelante (siempre activo)
+        if (Time.timeScale == 0) return;
+
         transform.Translate(Vector3.forward * velocidad * Time.deltaTime);
 
-        // Selección de carril
         SelectTargetPosition();
-
-        // Movimiento lateral suave hacia el carril objetivo
         MoveToTargetPosition();
 
-        // Actualiza el texto de las barras recogidas
         if (chocolateText != null)
-        {
-            chocolateText.text = "Barras Recogidas: " + barrasRecogidas.ToString();
-        }
+            chocolateText.text = $"Barras Recogidas: {barrasRecogidas}";
 
-        // Actualiza la barra de energía
         if (energiaSlider != null)
-        {
             energiaSlider.value = energia;
-        }
 
-        // Verifica si la energía llegó a 0
         if (energia <= 0)
-        {
             GameOver();
-        }
 
         Debug.Log("Energía: " + energia);
-        Debug.Log("Chocolatina: " + chocolatina);
+        Debug.Log("Chocolatina: " + barrasRecogidas);
     }
 
     private void SelectTargetPosition()
@@ -157,22 +147,10 @@ public class PlayerManager : MonoBehaviour
             energia -= velChocolatina;
             velocidad -= velChocolatina;
 
-            // Asegúrate de que la energía no sea menor que 0
-            if (energia < 0)
-            {
-                energia = 0;
-            }
 
-            // Reproduce la animación de tropezar
             if (animator != null)
             {
                 animator.SetTrigger("Trip");
-            }
-
-            if (energia <= 0)
-            {
-                Debug.Log("PERDISTE EL JUEGOOOOOOOOOO");
-                GameOver();
             }
 
             if (audiosourceDisminuirVelocidad != null)
@@ -182,32 +160,18 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    void GameOver()
+    public void ReiniciarPosicion()
     {
-        Debug.Log("Game over llamado");
-
-        float distanciaFinal = transform.position.z;
-        float tiempoFinal = Time.timeSinceLevelLoad;
-
-        Debug.Log("Barras recogidas: " + barrasRecogidas);
-        Debug.Log("Distancia final: " + distanciaFinal);
-        Debug.Log("Tiempo final: " + tiempoFinal);
-
-        if (RankingManager.Instance != null)
-        {
-            RankingManager.Instance.GuardarRanking(barrasRecogidas, distanciaFinal, tiempoFinal);
-            RankingManager.Instance.MostrarRanking();
-        }
-        else
-        {
-            Debug.Log("RankingManager.Instance es nulo");
-        }
-
-        ReiniciarJuego();
+        transform.position = targetPosition;
     }
 
-    void ReiniciarJuego()
+    void GameOver()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public int ObtenerPuntaje()
+    {
+        return barrasRecogidas; // O cualquier otra variable que represente el puntaje
     }
 }

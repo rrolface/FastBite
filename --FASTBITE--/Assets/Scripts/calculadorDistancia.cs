@@ -3,36 +3,42 @@ using TMPro;
 
 public class calculadorDistancia : MonoBehaviour
 {
-    public TMP_Text distanceText; // Referencia al TextMeshPro para mostrar la distancia
-    private Vector3 lastPosition; // Última posición del jugador
-    private float totalDistance;  // Distancia total recorrida
+    public TMP_Text distanceText;
+    private Vector3 lastPosition;
+    private float totalDistance;
 
     void Start()
     {
-        // Inicializar la última posición con la posición actual del jugador
-        lastPosition = transform.position;
-        totalDistance = 0f;
+        ReiniciarDistancia();
+    }
 
-        // Inicializar el texto de la distancia
+    void Update()
+    {
+        if (Time.timeScale == 0) return;
+
+        float distanceThisFrame = Vector3.Distance(transform.position, lastPosition);
+        totalDistance += distanceThisFrame;
+        lastPosition = transform.position;
+
+        if (distanceText != null)
+        {
+            distanceText.text = $"Distancia: {totalDistance:F1} m";
+        }
+    }
+
+    public void ReiniciarDistancia()
+    {
+        totalDistance = 0f;
+        lastPosition = transform.position; // Asegura que la posición inicial sea correcta
+
         if (distanceText != null)
         {
             distanceText.text = "Distancia: 0 m";
         }
     }
 
-    void Update()
+    public float ObtenerDistancia()
     {
-        // Calcular la distancia recorrida desde el último frame
-        float distanceThisFrame = Vector3.Distance(transform.position, lastPosition);
-        totalDistance += distanceThisFrame;
-
-        // Actualizar la última posición
-        lastPosition = transform.position;
-
-        // Mostrar la distancia en el texto
-        if (distanceText != null)
-        {
-            distanceText.text = "Distancia: " + totalDistance.ToString("F1") + " m";
-        }
+        return totalDistance;
     }
 }
