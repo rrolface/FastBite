@@ -68,7 +68,7 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        if (Time.timeScale == 0) return;
+        if (!GameManager.Instance.gameStarted) return;
 
         transform.Translate(Vector3.forward * velocidad * Time.deltaTime);
 
@@ -82,7 +82,7 @@ public class PlayerManager : MonoBehaviour
             energiaSlider.value = energia;
 
         if (energia <= 0)
-            GameOver();
+            GameManager.Instance.EndGame();
 
         Debug.Log("Energía: " + energia);
         Debug.Log("Chocolatina: " + barrasRecogidas);
@@ -157,6 +157,10 @@ public class PlayerManager : MonoBehaviour
             {
                 audiosourceDisminuirVelocidad.PlayOneShot(audiosourceDisminuirVelocidad.clip);
             }
+        }
+        if (other.CompareTag("meta"))
+        {
+            GameManager.Instance.EndGame();
         }
     }
 

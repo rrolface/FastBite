@@ -1,46 +1,72 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
-    public bool juegoActivo = true;
+    public static GameManager Instance;
+    public bool gameStarted = false;
 
-    private UIManager uiManager;
-    private RankingManager rankingManager;
-    private PlayerManager player;
+    public TMP_InputField nameInput;
+    public GameObject startPanel;
+    public GameObject rankingPanel;
+    public TMP_Text rankingText;
+    public GameObject panelJuego;
+
+    private string playerName;
+    private float totalTime;
+    private float totalDistance;
+    private int totalChocolates;
 
     void Awake()
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+        }
     }
 
-    void Start()
+    public void StartGame()
     {
-        // Sustituimos FindObjectOfType por FindFirstObjectByType
-        uiManager = FindFirstObjectByType<UIManager>();
-        rankingManager = FindFirstObjectByType<RankingManager>();
-        player = FindFirstObjectByType<PlayerManager>();
-
-        IniciarJuego();
+        playerName = nameInput.text;
+        gameStarted = true;
+        startPanel.SetActive(false);
+        panelJuego.SetActive(true);
     }
 
-    public void IniciarJuego()
+    public void EndGame()
     {
-        juegoActivo = true;
+        gameStarted = false;
+
+        // Obtener referencias a los scripts en la escena
+        PlayerManager playerManager = FindObjectOfType<PlayerManager>();
+        calculadorDistancia distanceCalculator = FindObjectOfType<calculadorDistancia>();
+        TimerController timerController = FindObjectOfType<TimerController>();
+
+        if (playerManager != null)
+            totalChocolates = playerManager.ObtenerPuntaje();
+
+        if (distanceCalculator != null)
+            totalDistance = distanceCalculator.ObtenerDistancia();
+
+        if (timerController != null)
+            totalTime = timerController.ObtenerTiempo();
+
+        // Mostrar el ranking
+        rankingPanel.SetActive(true);
+        rankingText.text += $"\n{playerName}: {totalChocolates} chocolates, {totalDistance:F1} m, {totalTime:F1} s";
     }
 
-    public void TerminarJuego()
+
+    public void RestartGame()
     {
-        if (!juegoActivo) return;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
-        juegoActivo = false;
-        uiManager?.MostrarGameOver();
-
-        if (player != null)
-            rankingManager?.GuardarPuntaje(player.ObtenerPuntaje());
+    public void UpdateStats(float time, float distance, int chocolates)
+    {
+        totalTime = time;
+        totalDistance = distance;
+        totalChocolates = chocolates;
     }
 }

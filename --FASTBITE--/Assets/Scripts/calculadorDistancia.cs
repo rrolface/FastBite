@@ -14,7 +14,7 @@ public class calculadorDistancia : MonoBehaviour
 
     void Update()
     {
-        if (Time.timeScale == 0) return;
+        if (!GameManager.Instance.gameStarted) return;
 
         float distanceThisFrame = Vector3.Distance(transform.position, lastPosition);
         totalDistance += distanceThisFrame;

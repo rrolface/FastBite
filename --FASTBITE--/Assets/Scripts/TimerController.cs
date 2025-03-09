@@ -14,7 +14,7 @@ public class TimerController : MonoBehaviour
 
     void Update()
     {
-        if (!isRunning) return;
+        if (!GameManager.Instance.gameStarted) return;
 
         float elapsedTime = Time.time - startTime;
         string minutes = ((int)elapsedTime / 60).ToString("00");
