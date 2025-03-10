@@ -7,5 +7,14 @@ public class IniciarEscenaMain : MonoBehaviour
     {
         SceneManager.LoadScene("Main"); 
     }
+
+    public void endgame()
+    {
+        Application.Quit();
+
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+    }
 }
         

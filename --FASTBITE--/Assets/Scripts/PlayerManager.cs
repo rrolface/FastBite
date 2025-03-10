@@ -15,11 +15,11 @@ public class PlayerManager : MonoBehaviour
     public GameObject PanelJuego;
 
     public float chocolatina = 1f;
-    private float velChocolatina = 0.6f;
+    private float velChocolatina = 0.2f;  // Ajustado para que no suba mucho por barra de chocolate
 
     private int barrasRecogidas = 0;  // Contador de barras recogidas
-    public float energia = 0f;  // Energía del jugador (comienza en 0)
-    private float maxEnergiaActual = 0f; // Energía máxima actual
+    public float energia = 0.5f;  // Energía del jugador (comienza en 0.5)
+    private float maxEnergiaActual = 1f; // Energía máxima actual (inicialmente en 1)
     public TMP_Text chocolateText;
 
     public Slider energiaSlider;
@@ -40,7 +40,6 @@ public class PlayerManager : MonoBehaviour
         inputManager = GetComponent<InputManager>();
         targetPosition = transform.position; // Inicializa la posición objetivo
 
-
         // Obtén el componente Animator
         animator = GetComponent<Animator>();
 
@@ -48,13 +47,14 @@ public class PlayerManager : MonoBehaviour
         {
             chocolateText.text = "Barras Recogidas 0";
         }
+        energia = 0.5f; // Comienza con energía en el medio
 
         // Inicializa la barra de energía
         if (energiaSlider != null)
         {
             energiaSlider.minValue = 0;
-            energiaSlider.maxValue = 1; // Valor inicial máximo (puede aumentar)
-            energiaSlider.value = energia; // Comienza en 0
+            energiaSlider.maxValue = maxEnergiaActual; // Valor inicial máximo
+            energiaSlider.value = energia; // Comienza en 0.5
         }
 
         // Asegúrate de que los AudioSources estén asignados
@@ -131,8 +131,14 @@ public class PlayerManager : MonoBehaviour
         if (other.CompareTag("BarraChocolate"))
         {
             barrasRecogidas++;
-            energia += velChocolatina;
-            velocidad += velChocolatina;
+            energia += velChocolatina; // Aumenta energía en una cantidad más controlada
+            velocidad += velChocolatina; // Aumenta velocidad con un valor proporcional
+
+            // Limitar el aumento de energía al máximo
+            if (energia > maxEnergiaActual)
+            {
+                energia = maxEnergiaActual; // No superar el máximo
+            }
 
             // Actualiza la energía máxima si es necesario
             if (energia > maxEnergiaActual)
@@ -153,9 +159,15 @@ public class PlayerManager : MonoBehaviour
 
         if (other.CompareTag("Obstaculo"))
         {
-            energia -= velChocolatina;
-            velocidad -= velChocolatina;
+            // Ajustamos la penalización por chocar con un obstáculo
+            energia -= 0.2f; // Penalty más bajo al chocar con un obstáculo
+            velocidad -= 0.2f; // Reducimos velocidad en la misma proporción
 
+            // Limitar la reducción de la energía para no ir a 0 inmediatamente
+            if (energia < 0)
+            {
+                energia = 0; // Nunca puede ser menor que 0
+            }
 
             if (animator != null)
             {
@@ -171,7 +183,6 @@ public class PlayerManager : MonoBehaviour
         {
             GameManager.Instance.EndGame();
             PanelJuego.SetActive(false);
-            
         }
     }
 
