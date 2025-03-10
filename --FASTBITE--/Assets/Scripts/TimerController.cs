@@ -5,16 +5,11 @@ public class TimerController : MonoBehaviour
 {
     public TMP_Text timerText;
     private float startTime;
-    private bool isRunning;
-
-    void Start()
-    {
-        StartTimer();
-    }
+    private bool isRunning = false; // No inicia automáticamente
 
     void Update()
     {
-        if (!GameManager.Instance.gameStarted) return;
+        if (!isRunning) return; // Solo avanza si el temporizador está activo
 
         float elapsedTime = Time.time - startTime;
         string minutes = ((int)elapsedTime / 60).ToString("00");

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
+    private bool isMoving = false;
     private InputManager inputManager;
     private Vector3 targetPosition;
     public float lanesDistance = 7f;  // Distancia entre carriles
@@ -91,31 +92,38 @@ public class PlayerManager : MonoBehaviour
 
     private void SelectTargetPosition()
     {
+        if (isMoving) return; // Evita cambios hasta completar el movimiento
+
         float horizontalMovement = inputManager.HorizontalMovement.ReadValue<float>();
         float x = transform.position.x;
 
-        // Movimiento a la derecha (solo si no supera el límite derecho)
         if (horizontalMovement == -1 && x < rightLimit)
         {
-            targetPosition.x = Mathf.Min(x + lanesDistance, rightLimit); // Asegura que no se pase del límite derecho
+            targetPosition.x = Mathf.Min(x + lanesDistance, rightLimit);
+            isMoving = true; // Evita nuevos movimientos hasta que llegue
         }
-        // Movimiento a la izquierda (solo si no supera el límite izquierdo)
         else if (horizontalMovement == 1 && x > leftLimit)
         {
-            targetPosition.x = Mathf.Max(x - lanesDistance, leftLimit); // Asegura que no se pase del límite izquierdo
+            targetPosition.x = Mathf.Max(x - lanesDistance, leftLimit);
+            isMoving = true;
         }
     }
 
     private void MoveToTargetPosition()
     {
-        // Mueve suavemente hacia la posición objetivo en el eje X
         Vector3 newPosition = new Vector3(
-            Mathf.MoveTowards(transform.position.x, targetPosition.x, lateralSpeed * Time.deltaTime),
-            transform.position.y,
-            transform.position.z
+        Mathf.MoveTowards(transform.position.x, targetPosition.x, lateralSpeed * Time.deltaTime),
+        transform.position.y,
+        transform.position.z
         );
 
         transform.position = newPosition;
+
+        // Si ya llegó al objetivo, permite nuevos movimientos
+        if (transform.position.x == targetPosition.x)
+        {
+            isMoving = false;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -179,6 +187,6 @@ public class PlayerManager : MonoBehaviour
 
     public int ObtenerPuntaje()
     {
-        return barrasRecogidas; // O cualquier otra variable que represente el puntaje
+        return barrasRecogidas;
     }
 }
