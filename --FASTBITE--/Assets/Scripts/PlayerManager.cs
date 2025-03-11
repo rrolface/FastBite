@@ -6,28 +6,32 @@ using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
-    private bool isMoving = false;
+    private bool isMoving = false; // Variable para evitar mas de un movimiento
     private InputManager inputManager;
     private Vector3 targetPosition;
+
     public float lanesDistance = 7f;  // Distancia entre carriles
-    public float velocidad = 5f;      // Velocidad hacia adelante
-    public float lateralSpeed = 10f;  // Velocidad de movimiento lateral
+    public float velocidad = 5f;
+    public float lateralSpeed = 10f;
+
+
     public GameObject PanelJuego;
 
-    public float chocolatina = 1f;
-    private float velChocolatina = 0.3f;  // Ajustado para que no suba mucho por barra de chocolate
+    // Variables de Mencanicas del juego
 
-    private int barrasRecogidas = 0;  // Contador de barras recogidas
+    private float velChocolatina = 0.5f; 
+    private int barrasRecogidas = 0; 
     private int tropezones = 0;
-    public float energia = 0.5f;  // Energía del jugador (comienza en 0.5)
-    private float maxEnergiaActual = 1f; // Energía máxima actual (inicialmente en 1)
     public TMP_Text chocolateText;
 
+    // Variables Mecanica de barra de enrgia
+    public float energia = 0.5f; 
+    private float maxEnergiaActual = 1f; 
     public Slider energiaSlider;
 
     // Límites de los carriles
-    public float leftLimit = 7.89f;    // Límite izquierdo
-    public float rightLimit = 21.89f;  // Límite derecho
+    public float leftLimit = 7.89f;   
+    public float rightLimit = 21.89f;  
 
     // Audio
     public AudioSource audiosourceDisminuirVelocidad;
@@ -37,6 +41,8 @@ public class PlayerManager : MonoBehaviour
     // Animator
     public Animator animator;
 
+
+    //Variable para activar panel de perdida en el GameManager
     public bool PerdioPorBus = false;
 
     void Start()
@@ -44,7 +50,7 @@ public class PlayerManager : MonoBehaviour
         inputManager = GetComponent<InputManager>();
         targetPosition = transform.position; // Inicializa la posición objetivo
 
-        // Obtén el componente Animator
+
         animator = GetComponent<Animator>();
 
         if (chocolateText != null)
@@ -52,6 +58,7 @@ public class PlayerManager : MonoBehaviour
             chocolateText.text = "Barras Recogidas 0";
         }
         energia = 0.5f; // Comienza con energía en el medio
+
 
         // Inicializa la barra de energía
         if (energiaSlider != null)
@@ -61,7 +68,8 @@ public class PlayerManager : MonoBehaviour
             energiaSlider.value = energia; // Comienza en 0.5
         }
 
-        // Asegúrate de que los AudioSources estén asignados
+
+        
         if (audiosourceChocolatina == null)
         {
             audiosourceChocolatina = GetComponent<AudioSource>();
@@ -87,6 +95,9 @@ public class PlayerManager : MonoBehaviour
         SelectTargetPosition();
         MoveToTargetPosition();
 
+
+        // Textos en el panel de Juego
+
         if (chocolateText != null)
             chocolateText.text = $"FastBites: {barrasRecogidas}";
 
@@ -95,6 +106,9 @@ public class PlayerManager : MonoBehaviour
 
         if (energia <= 0)
             GameManager.Instance.EndGame();
+
+
+        //Visualizar en Consolar
 
         Debug.Log("Energía: " + energia);
         Debug.Log("Chocolatina: " + barrasRecogidas);
@@ -116,7 +130,7 @@ public class PlayerManager : MonoBehaviour
         else if (horizontalMovement == 1 && x > leftLimit)
         {
             targetPosition.x = Mathf.Max(x - lanesDistance, leftLimit);
-            isMoving = true;
+            isMoving = true; // Evita nuevos movimientos hasta que llegue
         }
     }
 
@@ -139,16 +153,17 @@ public class PlayerManager : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Que sucede si agarra barra de chocolate
         if (other.CompareTag("BarraChocolate"))
         {
             barrasRecogidas++;
-            energia += velChocolatina; // Aumenta energía en una cantidad más controlada
-            velocidad += velChocolatina; // Aumenta velocidad con un valor proporcional
+            energia += velChocolatina; 
+            velocidad += velChocolatina; 
 
             // Limitar el aumento de energía al máximo
             if (energia > maxEnergiaActual)
             {
-                energia = maxEnergiaActual; // No superar el máximo
+                energia = maxEnergiaActual; 
             }
 
             // Actualiza la energía máxima si es necesario
@@ -168,17 +183,19 @@ public class PlayerManager : MonoBehaviour
             Destroy(other.gameObject);
         }
 
+
+        // Que sucede al chocar con un obstaculo
         if (other.CompareTag("Obstaculo"))
         {
-            // Ajustamos la penalización por chocar con un obstáculo
-            energia -= 0.2f; // Penalty más bajo al chocar con un obstáculo
-            velocidad -= 0.2f; // Reducimos velocidad en la misma proporción
+            
+            energia -= 0.2f;             // Barra de energia decrece
+            velocidad -= 0.2f; 
             tropezones++;
 
-            // Limitar la reducción de la energía para no ir a 0 inmediatamente
+            
             if (energia < 0)
             {
-                energia = 0; // Nunca puede ser menor que 0
+                energia = 0; 
             }
 
             if (animator != null)
@@ -191,11 +208,15 @@ public class PlayerManager : MonoBehaviour
                 audiosourceDisminuirVelocidad.PlayOneShot(audiosourceDisminuirVelocidad.clip);
             }
         }
+
+        // Que sucede si llega a Meta
         if (other.CompareTag("meta"))
         {
             GameManager.Instance.EndGame();
             PanelJuego.SetActive(false);
         }
+
+        // Que sucede si choca con un bus
         if (other.CompareTag("Bus"))
         {
             if(animator != null)
@@ -207,24 +228,19 @@ public class PlayerManager : MonoBehaviour
                 audiosourceDisminuirVelocidad.PlayOneShot(audiosourceDisminuirVelocidad.clip);
             }
             PerdioPorBus = true;
-            GameManager.Instance.EndGame(); // Llamar a EndGame si choca con un Bus
+            GameManager.Instance.EndGame();
         }
     }
 
-    public void ReiniciarPosicion()
-    {
-        transform.position = targetPosition;
-    }
-
-    void GameOver()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
+    
+    // puntake total para que el gameManager llame
 
     public int ObtenerPuntaje()
     {
         return barrasRecogidas;
     }
+
+    // Tropezones para que el gameManager llame
 
     public int Tropezones()
     {

@@ -7304,8 +7304,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3.9055, y: -40.69057}
-  m_SizeDelta: {x: 680.19, y: 386.1908}
+  m_AnchoredPosition: {x: 5.5107, y: -40.69057}
+  m_SizeDelta: {x: 540.6584, y: 386.1908}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &50895492
 PrefabInstance:
@@ -70850,10 +70850,7 @@ MonoBehaviour:
   badObstacles:
   - {fileID: 795685660}
   - {fileID: 1332111156}
-  - {fileID: 1332111156}
   goodObstacles:
-  - {fileID: 2147404652}
-  - {fileID: 2147404652}
   - {fileID: 2147404652}
   spawnPoints:
   - {fileID: 707888221}
@@ -89085,15 +89082,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.792631
+      value: 13.29
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -37.08098
+      value: -39.98
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -48.942978
+      value: -50.03
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalRotation.w
@@ -144514,8 +144511,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 948173092}
   - {fileID: 1078574677}
+  - {fileID: 948173092}
   - {fileID: 50889698}
   - {fileID: 1076560624}
   - {fileID: 838891397}
@@ -163577,7 +163574,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -164, y: 94}
+  m_AnchoredPosition: {x: -93, y: 55}
   m_SizeDelta: {x: 166.4328, y: 54.669205}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1078574678
@@ -191739,19 +191736,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.93375
+      value: 0.78583735
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.792631
+      value: 4.27
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -37.08098
+      value: -36.9
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -48.942978
+      value: -48.88
       objectReference: {fileID: 0}
     - target: {fileID: 4533943726500818, guid: 2224b63330275e5478ef024b2913f937, type: 3}
       propertyPath: m_LocalRotation.w
@@ -326305,9 +326302,8 @@ MonoBehaviour:
   velocidad: 5
   lateralSpeed: 10
   PanelJuego: {fileID: 1828257852}
-  chocolatina: 1
-  energia: 5
   chocolateText: {fileID: 1473934797}
+  energia: 5
   energiaSlider: {fileID: 1887060193}
   leftLimit: -157.13
   rightLimit: -146.74

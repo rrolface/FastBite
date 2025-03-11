@@ -1,19 +1,19 @@
 using UnityEngine;
-using TMPro; // Asegúrate de incluir este namespace para TextMeshPro
+using TMPro; 
 
 public class TimerController : MonoBehaviour
 {
     public TMP_Text timerText;
     private float startTime;
-    private bool isRunning = false; // No inicia automáticamente
+    private bool isRunning = false;  // No inicia automáticamente, si no cuando da la orden el GameManager
 
     void Update()
     {
-        if (!isRunning) return; // Solo avanza si el temporizador está activo
+        if (!isRunning) return;    // Solo avanza si el temporizador está activo
 
         float elapsedTime = Time.time - startTime;
         string minutes = ((int)elapsedTime / 60).ToString("00");
-        string seconds = (elapsedTime % 60).ToString("00.0"); // Incluye décimas de segundo
+        string seconds = (elapsedTime % 60).ToString("00.0"); 
 
         timerText.text = $"{minutes}:{seconds}";
     }

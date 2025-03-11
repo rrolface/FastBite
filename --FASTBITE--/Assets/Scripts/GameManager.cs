@@ -11,18 +11,20 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public bool gameStarted = false;
 
+    //Paneles y texto de paneles
     public TMP_InputField nameInput;
     public GameObject startPanel;
     public GameObject rankingPanel;
     public GameObject PanelGameOver;
-    public TMP_Text rankingText; // Se asume que esta es la parte donde se mostrará el ranking
+    public TMP_Text rankingText;
     public GameObject panelJuego;
 
+    // Datos a guardar y Archivo
     private string playerName;
     private float totalTime;
     private int totalChocolates;
     private int tropezones;
-    private string filePath; // Ruta del archivo de ranking
+    private string filePath;
    
     void Awake()
     {
@@ -31,7 +33,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
 
-        filePath = Application.dataPath + "/Ranking.txt"; // Ruta del archivo en la carpeta Assets
+        filePath = Application.dataPath + "/Ranking.txt";    // Ruta del archivo en la carpeta Assets
     }
 
     public void StartGame()
@@ -50,6 +52,7 @@ public class GameManager : MonoBehaviour
 
     public void EndGame()
     {
+        // Juego Termino, busca las variables (los objetos que tengan dicho codigo)
         gameStarted = false;
 
         PlayerManager playerManager = FindFirstObjectByType<PlayerManager>();
@@ -67,6 +70,9 @@ public class GameManager : MonoBehaviour
             timerController.StopTimer();
             totalTime = timerController.ObtenerTiempo();
         }
+
+        // En caso de que el jugador se quedo sin Energia ó choco con el bus
+
         if (playerManager.energia <= 0 || playerManager.PerdioPorBus)
         {
             if(playerManager.animator != null)
@@ -82,20 +88,23 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // Guardar los datos en el archivo de ranking solo si no perdió por esas razones
-        GuardarEnArchivo(playerName, totalTime, totalChocolates, tropezones);
-   
 
-        // Mostrar el ranking
+
+        GuardarEnArchivo(playerName, totalTime, totalChocolates, tropezones);
         MostrarRanking();
         rankingPanel.SetActive(true);
     }
 
+    // Guarda los datos en el archivo txt
+
     private void GuardarEnArchivo(string nombre, float tiempo, int chocolates, int tropezones)
     {
         string datos = $"{nombre}-{tiempo:F2}-{chocolates}-{tropezones}";
-        File.AppendAllText(filePath, datos + "\n"); // Agregar nueva línea al archivo
+        File.AppendAllText(filePath, datos + "\n"); 
     }
+
+    // Extrae los datos del archivo txt y los muestra el Ranking (Solo los 10 primeros)
+    // Prioriza Tiempo, luego barras y luego tropiezos
 
     private void MostrarRanking()
     {
@@ -118,15 +127,18 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            // Ordenar la lista con los criterios especificados
             rankingList = rankingList
-            .OrderBy(x => x.tiempo)         // Menor tiempo primero
-            .ThenByDescending(x => x.chocolates) // Mayor chocolates después
-            .ThenBy(x => x.tropezones)      // Menos tropiezos al final
-            .Take(10)                       // Solo los 10 mejores
+            .OrderBy(x => x.tiempo)                              // Menor tiempo primero
+            .ThenByDescending(x => x.chocolates)                 // Mayor chocolates después
+            .ThenBy(x => x.tropezones)                           // Menos tropiezos al final
+            .Take(10)                     
             .ToList();
 
+
+
             // Construcción del ranking para mostrar
+
+
             StringBuilder rankingFinal = new StringBuilder();
             rankingFinal.AppendLine("Nombre | Tiempo | Chocolates | Choques");
             rankingFinal.AppendLine("-----------------------------------------------");
@@ -143,6 +155,8 @@ public class GameManager : MonoBehaviour
             rankingText.text = "No hay datos aún.";
         }
     }
+
+    // Funcion llamada por un boton, para reinciar todo
 
     public void RestartGame()
     {

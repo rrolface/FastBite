@@ -2,12 +2,12 @@ using UnityEngine;
 using System.Collections;
 public class obstaculosLogic : MonoBehaviour
 {
-    public GameObject[] badObstacles;  // Array de obstáculos malos
-    public GameObject[] goodObstacles; // Array de obstáculos buenos
-    public Transform[] spawnPoints;    // Puntos de spawn en la pista
-    public float badObstacleInterval = 4f;  // Intervalo de spawn de obstáculos malos
-    public float goodObstacleInterval = 2f; // Intervalo de spawn de obstáculos buenos
-    public float obstacleSpeed = 5f;   // Velocidad de movimiento de los obstáculos
+    public GameObject[] badObstacles;  
+    public GameObject[] goodObstacles; 
+    public Transform[] spawnPoints;   
+    public float badObstacleInterval = 4f;  
+    public float goodObstacleInterval = 2f; 
+    public float obstacleSpeed = 5f;   
 
     private void Start()
     {
@@ -40,8 +40,11 @@ public class obstaculosLogic : MonoBehaviour
             // Asegurar un delay entre cada spawn en diferentes puntos
             yield return new WaitForSeconds(1f);
 
+
             // Elegir un obstáculo aleatorio del grupo correspondiente
             GameObject obstacle = obstacleArray[Random.Range(0, obstacleArray.Length)];
+
+
 
             // para el obstaculo 
 
@@ -51,16 +54,18 @@ public class obstaculosLogic : MonoBehaviour
             Quaternion rotation = Quaternion.Euler(-89.98f, 0f, 90.745f);
             GameObject newObstacle = Instantiate(obstacle, spawnPoint.position, rotation);
 
-            // rotacion obstaculo 
-
+            // rotacion obstaculo y bajar posicion "obstaculo"
+            Vector3 newPosition = newObstacle.transform.position;
             if (newObstacle.CompareTag("Obstaculo"))
             {
                 newObstacle.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+                newPosition.y -= 1.5f;
+
             }
+            newObstacle.transform.position = newPosition;
 
 
-        
-   
+
 
             // Mover el obstáculo hacia el jugador
             StartCoroutine(MoveObstacle(newObstacle));
