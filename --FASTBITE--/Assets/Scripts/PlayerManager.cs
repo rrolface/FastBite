@@ -15,9 +15,10 @@ public class PlayerManager : MonoBehaviour
     public GameObject PanelJuego;
 
     public float chocolatina = 1f;
-    private float velChocolatina = 0.2f;  // Ajustado para que no suba mucho por barra de chocolate
+    private float velChocolatina = 0.3f;  // Ajustado para que no suba mucho por barra de chocolate
 
     private int barrasRecogidas = 0;  // Contador de barras recogidas
+    private int tropezones = 0;
     public float energia = 0.5f;  // Energía del jugador (comienza en 0.5)
     private float maxEnergiaActual = 1f; // Energía máxima actual (inicialmente en 1)
     public TMP_Text chocolateText;
@@ -31,9 +32,12 @@ public class PlayerManager : MonoBehaviour
     // Audio
     public AudioSource audiosourceDisminuirVelocidad;
     public AudioSource audiosourceChocolatina;
+    public AudioSource audioBus;
 
     // Animator
     private Animator animator;
+
+    public bool PerdioPorBus = false;
 
     void Start()
     {
@@ -66,6 +70,12 @@ public class PlayerManager : MonoBehaviour
         {
             audiosourceDisminuirVelocidad = GetComponents<AudioSource>()[1];
         }
+
+        if (PerdioPorBus)
+        {
+           
+            audioBus.PlayOneShot(audioBus.clip);
+        }
     }
 
     void Update()
@@ -88,6 +98,7 @@ public class PlayerManager : MonoBehaviour
 
         Debug.Log("Energía: " + energia);
         Debug.Log("Chocolatina: " + barrasRecogidas);
+        Debug.Log("Velocidad: " + velocidad);
     }
 
     private void SelectTargetPosition()
@@ -162,6 +173,7 @@ public class PlayerManager : MonoBehaviour
             // Ajustamos la penalización por chocar con un obstáculo
             energia -= 0.2f; // Penalty más bajo al chocar con un obstáculo
             velocidad -= 0.2f; // Reducimos velocidad en la misma proporción
+            tropezones++;
 
             // Limitar la reducción de la energía para no ir a 0 inmediatamente
             if (energia < 0)
@@ -184,6 +196,12 @@ public class PlayerManager : MonoBehaviour
             GameManager.Instance.EndGame();
             PanelJuego.SetActive(false);
         }
+        if (other.CompareTag("Bus"))
+        {
+            
+            PerdioPorBus = true;
+            GameManager.Instance.EndGame(); // Llamar a EndGame si choca con un Bus
+        }
     }
 
     public void ReiniciarPosicion()
@@ -199,5 +217,10 @@ public class PlayerManager : MonoBehaviour
     public int ObtenerPuntaje()
     {
         return barrasRecogidas;
+    }
+
+    public int Tropezones()
+    {
+        return tropezones;
     }
 }

@@ -8,6 +8,7 @@ TagManager:
   - Obstaculo
   - BarraChocolate
   - meta
+  - Bus
   layers:
   - Default
   - TransparentFX

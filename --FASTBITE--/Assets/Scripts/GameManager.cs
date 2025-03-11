@@ -3,6 +3,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Text;
+using System.Collections.Generic;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,13 +14,14 @@ public class GameManager : MonoBehaviour
     public TMP_InputField nameInput;
     public GameObject startPanel;
     public GameObject rankingPanel;
+    public GameObject PanelGameOver;
     public TMP_Text rankingText; // Se asume que esta es la parte donde se mostrará el ranking
     public GameObject panelJuego;
 
     private string playerName;
     private float totalTime;
     private int totalChocolates;
-
+    private int tropezones;
     private string filePath; // Ruta del archivo de ranking
 
     void Awake()
@@ -53,25 +56,37 @@ public class GameManager : MonoBehaviour
         TimerController timerController = FindFirstObjectByType<TimerController>();
 
         if (playerManager != null)
+        {
             totalChocolates = playerManager.ObtenerPuntaje();
+            tropezones = playerManager.Tropezones();
+        }
+            
 
         if (timerController != null)
         {
             timerController.StopTimer();
             totalTime = timerController.ObtenerTiempo();
         }
+        if (playerManager.energia <= 0 || playerManager.PerdioPorBus)
+        {
+            
+            Debug.Log("Partida no guardada, el jugador perdió.");
+            PanelGameOver.SetActive(true);
+            return;
+        }
 
-        // Guardar los datos en el archivo de ranking
-        GuardarEnArchivo(playerName, totalChocolates, totalTime);
+        // Guardar los datos en el archivo de ranking solo si no perdió por esas razones
+        GuardarEnArchivo(playerName, totalTime, totalChocolates, tropezones);
+   
 
         // Mostrar el ranking
         MostrarRanking();
         rankingPanel.SetActive(true);
     }
 
-    private void GuardarEnArchivo(string nombre, int chocolates, float tiempo)
+    private void GuardarEnArchivo(string nombre, float tiempo, int chocolates, int tropezones)
     {
-        string datos = $"{nombre}-{chocolates}-{tiempo:F2}";
+        string datos = $"{nombre}-{tiempo:F2}-{chocolates}-{tropezones}";
         File.AppendAllText(filePath, datos + "\n"); // Agregar nueva línea al archivo
     }
 
@@ -80,23 +95,41 @@ public class GameManager : MonoBehaviour
         if (File.Exists(filePath))
         {
             string[] lineas = File.ReadAllLines(filePath);
-            string rankingFinal = "Nombre    |    Chocolates    |    Tiempo\n";
-            rankingFinal += "-----------------------------------------------\n";
+            List<(string nombre, float tiempo, int chocolates, int tropezones)> rankingList = new List<(string, float, int, int)>();
 
             foreach (string linea in lineas)
             {
                 string[] datos = linea.Split('-');
-                if (datos.Length == 3)
+                if (datos.Length == 4)
                 {
                     string nombre = datos[0];
-                    string chocolates = datos[1];
-                    string tiempo = datos[2];
+                    float tiempo = float.Parse(datos[1]);
+                    int chocolates = int.Parse(datos[2]);
+                    int tropezones = int.Parse(datos[3]);
 
-                    rankingFinal += $"{nombre}     {chocolates}      {tiempo}\n";
+                    rankingList.Add((nombre, tiempo, chocolates, tropezones));
                 }
             }
 
-            rankingText.text = rankingFinal;
+            // Ordenar la lista con los criterios especificados
+            rankingList = rankingList
+            .OrderBy(x => x.tiempo)         // Menor tiempo primero
+            .ThenByDescending(x => x.chocolates) // Mayor chocolates después
+            .ThenBy(x => x.tropezones)      // Menos tropiezos al final
+            .Take(10)                       // Solo los 10 mejores
+            .ToList();
+
+            // Construcción del ranking para mostrar
+            StringBuilder rankingFinal = new StringBuilder();
+            rankingFinal.AppendLine("Nombre | Tiempo | Chocolates | Choques");
+            rankingFinal.AppendLine("-----------------------------------------------");
+
+            foreach (var jugador in rankingList)
+            {
+                rankingFinal.AppendLine($"{jugador.nombre}      {jugador.tiempo:F2}     {jugador.chocolates}     {jugador.tropezones}");
+            }
+
+            rankingText.text = rankingFinal.ToString();
         }
         else
         {
