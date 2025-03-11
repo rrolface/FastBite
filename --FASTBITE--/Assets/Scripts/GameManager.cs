@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     private int totalChocolates;
     private int tropezones;
     private string filePath; // Ruta del archivo de ranking
-
+   
     void Awake()
     {
         if (Instance == null)
@@ -69,7 +69,14 @@ public class GameManager : MonoBehaviour
         }
         if (playerManager.energia <= 0 || playerManager.PerdioPorBus)
         {
-            
+            if(playerManager.animator != null)
+            {
+                playerManager.animator.SetTrigger("Caida");
+            }
+            if (playerManager.audiosourceDisminuirVelocidad != null)
+            {
+                playerManager.audiosourceDisminuirVelocidad.PlayOneShot(playerManager.audiosourceDisminuirVelocidad.clip);  // Reproducir sonido
+            }
             Debug.Log("Partida no guardada, el jugador perdió.");
             PanelGameOver.SetActive(true);
             return;

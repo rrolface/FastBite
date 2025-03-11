@@ -35,7 +35,7 @@ public class PlayerManager : MonoBehaviour
     public AudioSource audioBus;
 
     // Animator
-    private Animator animator;
+    public Animator animator;
 
     public bool PerdioPorBus = false;
 
@@ -198,7 +198,14 @@ public class PlayerManager : MonoBehaviour
         }
         if (other.CompareTag("Bus"))
         {
-            
+            if(animator != null)
+            {
+                animator.SetTrigger("Caida");
+            }
+            if (audiosourceDisminuirVelocidad != null)
+            {
+                audiosourceDisminuirVelocidad.PlayOneShot(audiosourceDisminuirVelocidad.clip);
+            }
             PerdioPorBus = true;
             GameManager.Instance.EndGame(); // Llamar a EndGame si choca con un Bus
         }

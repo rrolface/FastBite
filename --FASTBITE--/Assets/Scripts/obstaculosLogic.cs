@@ -43,9 +43,24 @@ public class obstaculosLogic : MonoBehaviour
             // Elegir un obstáculo aleatorio del grupo correspondiente
             GameObject obstacle = obstacleArray[Random.Range(0, obstacleArray.Length)];
 
-            // Instanciar el obstáculo en el punto de spawn con la rotación deseada
+            // para el obstaculo 
+
+           
+
+            // Instanciar el bus en el punto de spawn con la rotación deseada
             Quaternion rotation = Quaternion.Euler(-89.98f, 0f, 90.745f);
             GameObject newObstacle = Instantiate(obstacle, spawnPoint.position, rotation);
+
+            // rotacion obstaculo 
+
+            if (newObstacle.CompareTag("Obstaculo"))
+            {
+                newObstacle.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            }
+
+
+        
+   
 
             // Mover el obstáculo hacia el jugador
             StartCoroutine(MoveObstacle(newObstacle));
