@@ -71,3 +71,5 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+--FASTBITE--/Assets/Ranking.txt
+--FASTBITE--/Assets/Scripts/PlayerManager.cs

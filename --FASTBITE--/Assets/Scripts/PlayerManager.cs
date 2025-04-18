@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Net.Http.Headers;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -117,25 +118,31 @@ public class PlayerManager : MonoBehaviour
 
     private void SelectTargetPosition()
     {
-        if (isMoving) return; // Evita cambios hasta completar el movimiento
+        if (isMoving) return;
 
         float horizontalMovement = inputManager.HorizontalMovement.ReadValue<float>();
         float x = transform.position.x;
 
+         
         if (horizontalMovement == -1 && x < rightLimit)
         {
-            targetPosition.x = Mathf.Min(x + lanesDistance, rightLimit);
-            isMoving = true; // Evita nuevos movimientos hasta que llegue
-        }
-        else if (horizontalMovement == 1 && x > leftLimit)
+            targetPosition.x = Mathf.Min (x + lanesDistance,rightLimit);
+            isMoving = true;
+        } 
+        else if(horizontalMovement == 1 && x > leftLimit)
         {
             targetPosition.x = Mathf.Max(x - lanesDistance, leftLimit);
-            isMoving = true; // Evita nuevos movimientos hasta que llegue
+            isMoving = true;
         }
+
+
+
+
     }
 
     private void MoveToTargetPosition()
     {
+
         Vector3 newPosition = new Vector3(
         Mathf.MoveTowards(transform.position.x, targetPosition.x, lateralSpeed * Time.deltaTime),
         transform.position.y,
@@ -149,6 +156,15 @@ public class PlayerManager : MonoBehaviour
         {
             isMoving = false;
         }
+
+        //Vector3 newPosition = new Vector3(Mathf.MoveTowards(transform.position.x, targetPosition.x, lateralSpeed * Time.deltaTime), transform.position.y, transform.position.z);
+
+        //transform.position = newPosition;
+
+        //if (transform.position.x == targetPosition.x)
+        //{
+          //  isMoving = false;
+        //}
     }
 
     private void OnTriggerEnter(Collider other)
